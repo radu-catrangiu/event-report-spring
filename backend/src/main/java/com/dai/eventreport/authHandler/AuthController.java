@@ -51,20 +51,19 @@ public class AuthController {
 
     @GetMapping("/token")
     public ResponseEntity<TokenResponse> token(@RequestParam(name = "login_token") String loginToken) {
-        TokenResponse tokenResponse = new TokenResponse("email", true);
-
         Session session = sessionRepository.findSessionById(loginToken);
 
         if (session == null) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
+        
         User user = userRepository.findUserById(session.getUserId());
-
+        
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
-
+        
+        TokenResponse tokenResponse = new TokenResponse(user.getEmail(), user.isAdmin());
         return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
     }
 }
