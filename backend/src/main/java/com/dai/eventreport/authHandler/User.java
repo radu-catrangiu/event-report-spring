@@ -27,7 +27,7 @@ public class User {
         this.id = UUID.randomUUID().toString();
         this.email = email;
         this.password = password;
-        this.admin = true;
+        this.admin = false;
         this.created = new Date();
     }
 
