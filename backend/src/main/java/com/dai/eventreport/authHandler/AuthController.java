@@ -44,7 +44,7 @@ public class AuthController {
         Session session = new Session(user.getId(), user.isAdmin());
         sessionRepository.insert(session);
 
-        LoginResponse loginResponse = new LoginResponse(user.getId(), email, session.getId(), true);
+        LoginResponse loginResponse = new LoginResponse(user.getId(), email, session.getId(), user.isAdmin());
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
