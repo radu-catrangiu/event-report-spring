@@ -2,6 +2,7 @@ package com.dai.eventreport.eventsHandler;
 
 import com.dai.eventreport.authHandler.Session;
 import com.dai.eventreport.authHandler.SessionRepository;
+import com.dai.eventreport.eventsHandler.responses.CreateResponse;
 import com.dai.eventreport.imagesHandler.ImagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -33,7 +34,10 @@ public class EventsController {
     }
 
     @PostMapping
-    public ResponseEntity<Event> create(@RequestBody Event params) {
+    public ResponseEntity<CreateResponse> create(
+        @RequestBody Event params,
+        @RequestParam(name = "login_token", required = false) String loginToken
+    ) {
         Event event = new Event(
                 params.getTitle(),
                 params.getDescription(),
@@ -51,7 +55,20 @@ public class EventsController {
 
         imagesRepository.updateImageEventId(params.getImageId(), event.getId());
 
-        return new ResponseEntity<>(event, HttpStatus.OK);
+        if (loginToken != null) {
+            Session session = sessionRepository.findSessionById(loginToken);
+
+            if (session != null) {
+                event.setClaimId(null);
+                event.setOwnerId(session.getUserId());
+            }
+        }
+
+        eventsRepository.save(event);
+
+        CreateResponse createResponse = new CreateResponse(event, event.getClaimId());
+
+        return new ResponseEntity<>(createResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{eventId}")
@@ -85,5 +102,28 @@ public class EventsController {
         imagesRepository.deleteImageByEventId(eventId);
 
         return new ResponseEntity<>(eventId, HttpStatus.OK);
+    }
+
+    @PostMapping("/claim")
+    public ResponseEntity<String> claim(
+        @RequestParam("login_token") String loginToken,
+        @RequestBody EventClaim[] eventClaims
+    ) {
+        Session session = sessionRepository.findSessionById(loginToken);
+
+        if (session == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        for (EventClaim eventClaim : eventClaims) {
+            Event event = eventsRepository.findEventById(eventClaim.getEventId());
+            if (event != null && event.getClaimId() != null && event.getClaimId().equals(eventClaim.getClaimId())) {
+                event.setOwnerId(session.getUserId());
+                event.setClaimId(null);
+                eventsRepository.save(event);
+            } 
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
