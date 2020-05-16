@@ -35,7 +35,7 @@
           >Unresolve</button>
         </div>
         <div>
-          <button v-if="adminUser" class="btn btn-danger" @click="deleteEvent">Delete Event</button>
+          <button v-if="adminUser || userId === event.owner_id" class="btn btn-danger" @click="deleteEvent">Delete Event</button>
         </div>
       </div>
     </div>
@@ -45,7 +45,16 @@
 <script>
 export default {
   mounted() {
+    const user = this.$store.getters.user;
+    if (user) {
+      this.userId = user.user_id;
+    }
     this.$EventBus.$emit("add-point-on-map", this.event);
+  },
+  data() {
+    return {
+      userId: ""
+    };
   },
   props: {
     adminUser: Boolean,

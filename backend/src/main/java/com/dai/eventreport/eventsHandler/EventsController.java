@@ -94,8 +94,17 @@ public class EventsController {
     ) {
         Session session = sessionRepository.findSessionById(loginToken);
 
+        Event event = eventsRepository.findEventById(eventId);
+        if (event == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        if (event.getOwnerId().equals(session.getUserId())) {
+            session.setAdmin(true);
+        }
+
         if (session == null || !session.isAdmin()) {
-            return  new ResponseEntity<>(null, HttpStatus.FORBIDDEN);
+            return  new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         eventsRepository.deleteById(eventId);
