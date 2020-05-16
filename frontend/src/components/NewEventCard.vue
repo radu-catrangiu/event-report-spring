@@ -196,8 +196,16 @@ export default {
         return;
       }
       try {
-        const result = await this.$api.post("/events", this.event);
-        const storedEvent = result.data;
+        const loginToken = this.$cookies.get("login_token");
+        const result = await this.$api.post("/events", this.event, { params: { login_token: loginToken }});
+        const storedEvent = result.data.event;
+        if (result.data.claim_id) {
+          const claimableEvent = {
+            claim_id: result.data.claim_id,
+            event_id: result.data.event._id
+          };
+          this.$store.commit("claimableEvents", claimableEvent);
+        }
         this.$parent.eventsList.unshift(storedEvent);
         this.$EventBus.$emit("hide-point-marker");
         
