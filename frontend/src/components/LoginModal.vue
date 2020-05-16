@@ -26,7 +26,13 @@
             </div>
             <div class="form-group">
               <label for="passwordInput">Password</label>
-              <input type="password" class="form-control" id="passwordInput" v-model="password" />
+              <input
+                type="password"
+                class="form-control"
+                id="passwordInput"
+                v-model="password"
+                @keyup.enter="login"
+              />
             </div>
             <small
               id="emailHelp"
@@ -36,7 +42,7 @@
           </form>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-warning" @click="register">Register</button> -->
+          <button type="button" class="btn btn-warning" @click="register">Register</button>
           <button type="button" class="btn btn-primary" @click="login">Log In</button>
         </div>
       </div>
@@ -73,6 +79,11 @@ export default {
           const loginToken = result.data.login_token;
           this.$cookies.set("login_token", loginToken);
           this.$store.commit("user", result.data);
+
+          const claimableEvents = this.$store.getters.claimableEvents;
+          if (claimableEvents.length > 0) {
+            await this.claimEvents(claimableEvents);
+          }
         }
         this.$("#loginModal").modal("hide");
       } catch (error) {
@@ -83,8 +94,47 @@ export default {
         this.$cookies.remove("login_token");
       }
     },
+    async createAccount() {
+      try {
+        if (this.email.length < 3 || this.password.length < 3) {
+          this.error = "Email and password should be longer than 3 characters!";
+          return;
+        }
+
+        const result = await this.$api.post("/auth/create", {
+          email: this.email,
+          password: this.password
+        });
+
+        return result.status === 200;
+      } catch (error) {
+        if (error.response.status === 403) {
+          this.error = "Bad username or password";
+        }
+      }
+    },
     async register() {
-      this.$("#loginModal").modal("hide");
+      const success = await this.createAccount();
+      if (success) {
+        await this.login();
+      }
+    },
+    async claimEvents(eventClaims) {
+      try {
+        const loginToken = this.$cookies.get("login_token");
+        const result = await this.$api.post("/events/claim", eventClaims, {
+          params: {
+            login_token: loginToken
+          }
+        });
+
+        if (result.status === 200) {
+          this.$store.commit("clearClaimable");
+        }
+      } catch (error) {
+        // eslint-disable-next-line
+        console.error(error);
+      }
     }
   },
   mounted() {
