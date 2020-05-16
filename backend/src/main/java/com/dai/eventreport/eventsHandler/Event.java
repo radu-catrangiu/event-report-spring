@@ -1,6 +1,7 @@
 package com.dai.eventreport.eventsHandler;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -49,6 +50,10 @@ public class Event {
     private boolean resolved;
     @Field(name = "report_date")
     private Date reportDate;
+    @Field(name = "owner_id")
+    private String ownerId;
+    @JsonIgnore
+    private String claimId;
 
     public Event(String title, String description, String tag, Location location, String imageId) {
         this.id = UUID.randomUUID().toString();
@@ -59,6 +64,8 @@ public class Event {
         this.imageId = imageId.toLowerCase();
         this.resolved = false;
         this.reportDate = new Date();
+        this.ownerId = null;
+        this.claimId = UUID.randomUUID().toString();
     }
 
     public Event() { }
@@ -126,5 +133,21 @@ public class Event {
 
     public Date getReportDate() {
         return reportDate;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public String getClaimId() {
+        return claimId;
+    }
+
+    public void setClaimId(String claimId) {
+        this.claimId = claimId;
     }
 }
