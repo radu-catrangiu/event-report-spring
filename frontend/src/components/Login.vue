@@ -1,10 +1,10 @@
 <template>
   <div>
     <div v-if="user">
-      <button class="btn btn-secondary" @click="logOut">Log Out Admin</button>
+      <button class="btn btn-secondary" @click="logOut">Log Out</button>
     </div>
     <div v-else>
-      <button class="btn btn-secondary" @click="openLoginModal">Log In Admin</button>
+      <button class="btn btn-secondary" @click="openLoginModal">Account</button>
     </div>
   </div>
 </template>
