@@ -4,11 +4,9 @@
     <image-modal></image-modal>
     <div class="row align-items-center">
       <div class="col text-left">
-        <!-- TODO: Logo here -->
         <h2 class="ml-5 font-weight-bold">EventReport</h2>
       </div>
       <div class="col text-right">
-        <!-- TODO: Show current user or login btn -->
         <login/>
       </div>
     </div>
