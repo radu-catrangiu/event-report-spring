@@ -44,7 +44,7 @@ public class AuthController {
         Session session = new Session(user.getId(), user.isAdmin());
         sessionRepository.insert(session);
 
-        LoginResponse loginResponse = new LoginResponse(email, session.getId(), true);
+        LoginResponse loginResponse = new LoginResponse(user.getId(), email, session.getId(), true);
 
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
@@ -63,7 +63,7 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         
-        TokenResponse tokenResponse = new TokenResponse(user.getEmail(), user.isAdmin());
+        TokenResponse tokenResponse = new TokenResponse(user.getId(), user.getEmail(), user.isAdmin());
         return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
     }
 }
