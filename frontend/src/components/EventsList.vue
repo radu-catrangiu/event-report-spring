@@ -10,17 +10,9 @@
         @click="showList = !showList"
       >{{ showList ? "REPORT AN EVENT" : "BACK TO LIST"}}</button>
     </div>
-    <div  v-bind:hidden="!showList">
-      <div class="input-group  input-group-lg my-1">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Filter events"
-          v-model="filterString"
-        />
-        <!-- <div class="input-group-append">
-          <button class="btn btn-secondary" type="button">Sort</button>
-        </div> -->
+    <div v-bind:hidden="!showList">
+      <div class="input-group input-group-lg my-1">
+        <input type="text" class="form-control" placeholder="Filter events" v-model="filterString" />
       </div>
     </div>
     <div v-bind:hidden="showList">
@@ -61,7 +53,13 @@ export default {
   },
   computed: {
     filteredList() {
-      return this.eventsList.filter(event => event.title.includes(this.filterString));
+      const filterString = this.filterString.toLowerCase();
+      return this.eventsList.filter(
+        event =>
+          event.description.toLowerCase().includes(filterString) ||
+          event.title.toLowerCase().includes(filterString) ||
+          event.tag.toLowerCase().includes(filterString)
+      );
     }
   },
   async mounted() {
