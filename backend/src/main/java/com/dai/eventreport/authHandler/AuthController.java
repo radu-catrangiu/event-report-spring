@@ -27,6 +27,11 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
+        User existingUser = userRepository.findUserByEmail(params.getEmail());
+        if (existingUser != null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         User user = new User(params.getEmail(), params.getPassword());
         userRepository.insert(user);
 
