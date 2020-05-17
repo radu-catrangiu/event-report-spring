@@ -22,7 +22,7 @@
         >{{event.tag}}</span>
         <p class="card-text">{{event.description}}</p>
         <div class="btn-group mb-1">
-          <button class="btn btn-warning" @click="showEventImage">Show image</button>
+          <button class="btn btn-warning" @click="showEventImage">See Details</button>
           <button
             v-if="adminUser && !event.resolved"
             class="btn btn-success"
