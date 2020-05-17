@@ -10,6 +10,19 @@
         @click="showList = !showList"
       >{{ showList ? "REPORT AN EVENT" : "BACK TO LIST"}}</button>
     </div>
+    <div  v-bind:hidden="!showList">
+      <div class="input-group  input-group-lg my-1">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Filter events"
+          v-model="filterString"
+        />
+        <!-- <div class="input-group-append">
+          <button class="btn btn-secondary" type="button">Sort</button>
+        </div> -->
+      </div>
+    </div>
     <div v-bind:hidden="showList">
       <new-event-card />
     </div>
@@ -17,10 +30,10 @@
       id="list-container"
       v-bind:hidden="!showList"
       class="overflow-auto"
-      style="max-height: 88vh;"
+      style="max-height: 80vh;"
     >
       <div v-if="eventsList.length > 0">
-        <div v-for="(event, index) in eventsList" :key="event._id" :id="event._id">
+        <div v-for="(event, index) in filteredList" :key="event._id" :id="event._id">
           <event-card :event="event" :index="index" :adminUser="adminUser"></event-card>
         </div>
       </div>
@@ -40,10 +53,16 @@ export default {
   },
   data() {
     return {
+      filterString: "",
       adminUser: false,
       showList: true,
       eventsList: []
     };
+  },
+  computed: {
+    filteredList() {
+      return this.eventsList.filter(event => event.title.includes(this.filterString));
+    }
   },
   async mounted() {
     this.$store.subscribe(mutation => {
@@ -95,7 +114,7 @@ export default {
 function checkUser(self) {
   const user = self.$store.getters.user;
   /* eslint-disable */
-  console.log(user); 
+  console.log(user);
   if (!user) {
     self.adminUser = false;
     return;

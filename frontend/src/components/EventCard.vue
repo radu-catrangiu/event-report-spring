@@ -51,6 +51,11 @@ export default {
     }
     this.$EventBus.$emit("add-point-on-map", this.event);
   },
+  destroyed() {
+    // eslint-disable-next-line
+    console.error(this.event._id + " destroyed");
+    this.$EventBus.$emit("delete-point-from-map", this.event);
+  },
   data() {
     return {
       userId: ""
