@@ -22,7 +22,7 @@
           <h5>Description:</h5>
           <p>{{event.description}}</p>
           <h5>Report Date:</h5>
-          <p>{{event.report_date}}</p>
+          <p>{{event.report_date | parseDate}}</p>
           <h5>Image:</h5>
           <img v-if="event.image" class="img-fluid" :src="event.image" @load="show = true" v-show="show"/>
           <div v-if="!show">
@@ -44,6 +44,11 @@ export default {
     return {
       event: {},
       show: false
+    }
+  },
+  filters: {
+    parseDate(date) {
+      return new Date(date).toLocaleString('ro-RO');
     }
   },
   mounted() {
