@@ -2,12 +2,15 @@ package com.dai.eventreport.eventsHandler;
 
 import com.dai.eventreport.authHandler.Session;
 import com.dai.eventreport.authHandler.SessionRepository;
+import com.dai.eventreport.authHandler.User;
+import com.dai.eventreport.authHandler.UserRepository;
 import com.dai.eventreport.eventsHandler.responses.CreateResponse;
 import com.dai.eventreport.imagesHandler.ImagesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 public class EventsController {
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    UserRepository usersRepository;
 
     @Autowired
     EventsRepository eventsRepository;
@@ -51,7 +60,11 @@ public class EventsController {
             return  new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
-        // TODO: Send mail to all admins
+        User[] admins = usersRepository.getAdmins();
+        for (User admin : admins) {
+            MailSenderThread thread = new MailSenderThread(javaMailSender, event, admin);
+            thread.start();
+        }
 
         imagesRepository.updateImageEventId(params.getImageId(), event.getId());
 
