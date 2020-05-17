@@ -48,11 +48,11 @@ public class EventsController {
         @RequestParam(name = "login_token", required = false) String loginToken
     ) {
         Event event = new Event(
-                params.getTitle(),
-                params.getDescription(),
-                params.getTag(),
-                params.getLocation(),
-                params.getImageId()
+            params.getTitle(),
+            params.getDescription(),
+            params.getTag(),
+            params.getLocation(),
+            params.getImageId()
         );
 
         boolean imageExists = imagesRepository.existsById(params.getImageId());
